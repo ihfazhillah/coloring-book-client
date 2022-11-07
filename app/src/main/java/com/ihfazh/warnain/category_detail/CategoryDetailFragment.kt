@@ -141,7 +141,7 @@ fun CategoryDetailFragment(
                         .height(TextFieldDefaults.MinHeight),
                         onClick = {
                             images.value[pagerState.currentPage].let { detail ->
-//                                categoryDetailViewModel.print(detail.id)
+                                categoryDetailViewModel.print(detail.id)
                                 navigator.navigate(PrintRunningFragmentDestination(category, detail))
                             }
                         }) {
