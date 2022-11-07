@@ -1,6 +1,7 @@
 package com.ihfazh.warnain.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -21,17 +22,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.ihfazh.warnain.domain.Category
 
 @Composable
 fun ImageCard(
-    url: String,
-    contentDescription: String,
-    title: String,
-    modifier: Modifier = Modifier
+//    url: String,
+//    contentDescription: String,
+//    title: String,
+    category: Category,
+    modifier: Modifier = Modifier,
+    onClick: (Category) -> Unit = {}
 ){
     Card(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable(onClick = {onClick.invoke(category)}),
         elevation = 2.dp,
 
         ) {
@@ -42,16 +47,16 @@ fun ImageCard(
         {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(url)
+                    .data(category.thumbnail)
                     .crossfade(true)
                     .build(),
-                contentDescription = contentDescription,
+                contentDescription = category.title,
                 contentScale = ContentScale.Inside,
                 modifier = Modifier.fillMaxWidth()
-                    .heightIn(120.dp, 250.dp)
+                    .heightIn(120.dp)
             )
             Text(
-                title,
+                category.title,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(8.dp)

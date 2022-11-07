@@ -1,14 +1,20 @@
 package com.ihfazh.warnain
 
 import android.app.Application
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ihfazh.warnain.categories.CategoriesViewModel
+import com.ihfazh.warnain.category_detail.CategoryDetailViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.GlobalContext.startKoin
+import org.koin.dsl.module
 
 import org.koin.ksp.generated.*
 
 
 class WarnainApplication: Application(){
+
     override fun onCreate() {
         super.onCreate()
 

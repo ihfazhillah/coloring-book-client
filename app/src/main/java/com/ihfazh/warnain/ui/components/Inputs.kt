@@ -97,6 +97,9 @@ fun Stepper(
         OutlinedTextField(
             shape = RectangleShape,
             value = numberText.toString(),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                textColor = MaterialTheme.colors.onBackground
+            ),
             onValueChange = {
                 if (it.isEmpty()) {
                     numberText = 1

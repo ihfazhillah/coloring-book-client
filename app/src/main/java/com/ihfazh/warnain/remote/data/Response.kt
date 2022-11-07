@@ -28,3 +28,24 @@ data class CategoryItemResponse(
 	@Json(name="title")
 	val title: String
 )
+
+data class CategoryDetailResponse(
+	@Json(name = "id")
+	val id: Int,
+
+	@Json(name = "source")
+	val source: String,
+
+	@Json(name = "image")
+	val image: String
+
+)
+data class PrintImageBody(
+	@Json(name = "copies")
+	val copies: String,
+)
+
+data class PrintImageResponse(
+	@Json(name = "status")
+	val status: String,
+)

@@ -1,9 +1,8 @@
 package com.ihfazh.warnain.remote
 
-import com.ihfazh.warnain.remote.data.CategoriesResponse
-import com.ihfazh.warnain.remote.data.CategoryItemResponse
-import retrofit2.http.GET
-import retrofit2.http.Query
+import androidx.compose.runtime.ComposableTarget
+import com.ihfazh.warnain.remote.data.*
+import retrofit2.http.*
 
 interface WarnainService {
     @GET("categories/")
@@ -14,4 +13,13 @@ interface WarnainService {
 
     @GET("categories/last-access/")
     suspend fun getLastAccess(): List<CategoryItemResponse>
+
+    @GET("categories/{id}/")
+    suspend fun getCategory(@Path("id") id: Int): List<CategoryDetailResponse>
+
+    @POST("categories/print-image/{id}/")
+    suspend fun printImage(
+        @Path("id") id : Int,
+        @Body body: PrintImageBody
+    ): PrintImageResponse
 }
