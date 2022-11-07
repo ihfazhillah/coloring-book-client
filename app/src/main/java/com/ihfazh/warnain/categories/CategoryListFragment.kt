@@ -122,6 +122,11 @@ fun CategoryListFragment(
                             items(latestCategories.value){ category ->
                                 ImageCard(
                                     category = category,
+                                    onClick = {
+                                        navigator.navigate(
+                                            CategoryDetailFragmentDestination(category)
+                                        )
+                                    }
                                 )
                             }
 

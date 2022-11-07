@@ -26,6 +26,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
 import com.ihfazh.warnain.R
+import com.ihfazh.warnain.destinations.PrintRunningFragmentDestination
 import com.ihfazh.warnain.domain.Category
 import com.ihfazh.warnain.domain.CategoryFilter
 import com.ihfazh.warnain.ui.components.FilterChip
@@ -139,7 +140,10 @@ fun CategoryDetailFragment(
                     Button(modifier = Modifier
                         .height(TextFieldDefaults.MinHeight),
                         onClick = {
-                            categoryDetailViewModel.print(images.value[pagerState.currentPage].id)
+                            images.value[pagerState.currentPage].let { detail ->
+//                                categoryDetailViewModel.print(detail.id)
+                                navigator.navigate(PrintRunningFragmentDestination(category, detail))
+                            }
                         }) {
                         Text("Print")
                     }
