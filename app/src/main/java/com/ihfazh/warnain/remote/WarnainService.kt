@@ -22,4 +22,9 @@ interface WarnainService {
         @Path("id") id : Int,
         @Body body: PrintImageBody
     ): PrintImageResponse
+
+    @POST("get-token/")
+    suspend fun getToken(
+        @Body body: GetTokenBody
+    ): GetTokenResponse
 }

@@ -29,7 +29,6 @@ import org.koin.androidx.compose.get
 import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-@RootNavGraph(start = true)
 @Destination()
 @Composable
 fun CategoryListFragment(

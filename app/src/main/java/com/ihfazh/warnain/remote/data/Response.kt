@@ -49,3 +49,13 @@ data class PrintImageResponse(
 	@Json(name = "status")
 	val status: String,
 )
+
+data class GetTokenBody(
+	@Json(name="mac")
+	val mac: String
+)
+
+data class GetTokenResponse(
+	@Json(name="token")
+	val token: String
+)
