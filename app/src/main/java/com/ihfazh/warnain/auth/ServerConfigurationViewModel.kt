@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ihfazh.warnain.WarnainKoinApplication
 import com.ihfazh.warnain.repositories.AuthRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.context.GlobalContext
 import org.koin.ksp.generated.module
@@ -18,21 +20,17 @@ class ServerConfigurationViewModel(
     private val _endpoint = MutableStateFlow("")
     val endpoint = _endpoint.asStateFlow()
 
-    private val _success = MutableStateFlow(false)
-    val success = _success.asStateFlow()
-
     fun updateEndpoint(value: String){
         _endpoint.value = value
-//        viewModelScope.launch {
-//            authRepository.setServerEndpoint(endpoint.value)
-//        }
     }
 
-    fun login(){
+    fun login(callback: () -> Unit){
         viewModelScope.launch {
             authRepository.setServerEndpoint(endpoint.value)
             authRepository.getToken()
-            _success.value = true
+            withContext(Dispatchers.Main){
+                callback.invoke()
+            }
         }
     }
 }

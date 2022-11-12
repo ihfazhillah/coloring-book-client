@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ihfazh.warnain.common.PreferenceManager
 import com.ihfazh.warnain.domain.Category
 import com.ihfazh.warnain.domain.CategoryFilter
 import com.ihfazh.warnain.repositories.CategoryRepository
@@ -16,7 +17,8 @@ import java.io.FilterInputStream
 
 @KoinViewModel
 class CategoriesViewModel(
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val preferenceManager: PreferenceManager
 ): ViewModel() {
 
     private var _searchState = MutableStateFlow("")
@@ -38,6 +40,10 @@ class CategoriesViewModel(
 
     private fun getLatestCategory() = viewModelScope.launch {
         _latestCategories.value = categoryRepository.getLastAccess()
+    }
+
+    fun hasToken(): Boolean {
+        return preferenceManager.getToken() != null
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

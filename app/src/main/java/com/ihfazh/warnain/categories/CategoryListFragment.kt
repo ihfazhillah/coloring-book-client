@@ -8,16 +8,18 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.LoadState
+import androidx.paging.LoadState.Error
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.rememberAsyncImagePainter
+import com.ihfazh.warnain.auth.LoginState
 import com.ihfazh.warnain.destinations.CategoryDetailFragmentDestination
+import com.ihfazh.warnain.destinations.ServerConfigurationFragmentDestination
 import com.ihfazh.warnain.domain.CategoryFilter
 import com.ihfazh.warnain.ui.components.ImageCard
 import com.ihfazh.warnain.ui.components.TextInput
@@ -25,21 +27,33 @@ import com.ihfazh.warnain.ui.theme.WarnainTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.ResultRecipient
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.koinViewModel
+import java.net.UnknownHostException
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-@Destination()
+@RootNavGraph(start = true)
+@Destination
 @Composable
 fun CategoryListFragment(
     navigator: DestinationsNavigator,
-    categoriesViewModel: CategoriesViewModel = get()
+    categoriesViewModel: CategoriesViewModel = get(),
+    loginResult: ResultRecipient<ServerConfigurationFragmentDestination, Boolean>
 ){
 
     val searchState = categoriesViewModel.searchState.collectAsState()
     val categories = categoriesViewModel.categories.collectAsLazyPagingItems()
     val filterState = categoriesViewModel.filterState.collectAsState()
     val latestCategories = categoriesViewModel.latestCategories.collectAsState()
+
+    LaunchedEffect("hasToken", categories.loadState.source) {
+        val noToken = !categoriesViewModel.hasToken()
+        val unknownHostError = categories.loadState.source.refresh is Error && (categories.loadState.source.refresh as Error).error is UnknownHostException
+        if (noToken || unknownHostError){
+            navigator.navigate(ServerConfigurationFragmentDestination.route)
+        }
+    }
 
     Scaffold(
         contentColor = MaterialTheme.colors.onPrimary,
