@@ -2,6 +2,6 @@ package com.ihfazh.warnain.auth
 
 
 sealed interface LoginState {
-    object SUCCESS: LoginState
-    object ERROR: LoginState
+    object MANUAL: LoginState
+    object QRCODE: LoginState
 }
