@@ -19,6 +19,7 @@ import androidx.paging.compose.items
 import coil.compose.rememberAsyncImagePainter
 import com.ihfazh.warnain.auth.LoginState
 import com.ihfazh.warnain.destinations.CategoryDetailFragmentDestination
+import com.ihfazh.warnain.destinations.CategoryDetailGridFragmentDestination
 import com.ihfazh.warnain.destinations.ServerConfigurationFragmentDestination
 import com.ihfazh.warnain.domain.CategoryFilter
 import com.ihfazh.warnain.ui.components.ImageCard
@@ -123,8 +124,11 @@ fun CategoryListFragment(
                                         category = category,
                                         onClick = {
                                             navigator.navigate(
-                                                CategoryDetailFragmentDestination(category)
+                                                CategoryDetailGridFragmentDestination(category)
                                             )
+//                                            navigator.navigate(
+//                                                CategoryDetailGridDestination(category)
+//                                            )
                                         }
                                     )
                                 }
@@ -137,8 +141,11 @@ fun CategoryListFragment(
                                     category = category,
                                     onClick = {
                                         navigator.navigate(
-                                            CategoryDetailFragmentDestination(category)
+                                            CategoryDetailGridFragmentDestination(category)
                                         )
+//                                        navigator.navigate(
+//                                            CategoryDetailGridDestination(category)
+//                                        )
                                     }
                                 )
                             }

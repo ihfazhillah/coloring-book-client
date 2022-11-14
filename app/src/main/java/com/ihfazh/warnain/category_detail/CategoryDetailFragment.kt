@@ -45,13 +45,14 @@ import kotlin.math.absoluteValue
 @Composable
 fun CategoryDetailFragment(
     category: Category,
+    page: Int = 0,
     categoryDetailViewModel: CategoryDetailViewModel = get(),
     navigator: DestinationsNavigator
 ) {
 
     categoryDetailViewModel.getDetail(category.id)
     val count = categoryDetailViewModel.count.collectAsState()
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(page)
 
     Scaffold(
 
