@@ -2,8 +2,15 @@ package com.ihfazh.warnain.auth
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.util.Rational
+import android.util.Size
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageAnalysis.Analyzer
 import androidx.camera.core.Preview
+import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.ViewPort
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
@@ -30,7 +37,10 @@ import com.ihfazh.warnain.ui.theme.WarnainTheme
 
 
 @Composable
-fun CameraView(){
+@OptIn(ExperimentalGetImage::class)
+fun CameraView(
+    onCodeFound: (String) -> Unit = {}
+){
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     val cameraFuture = remember {
@@ -55,15 +65,37 @@ fun CameraView(){
                     it.setSurfaceProvider(previewView.surfaceProvider)
                 }
 
+                // analyzer
+                val analysis = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .setTargetResolution(Size(250, 250))
+                    .build()
+
+                analysis.setAnalyzer(executor, QRCodeAnalyzer{
+                    onCodeFound.invoke(it)
+                })
+
+                // viewPort
+                val viewPort = ViewPort.Builder(Rational(250, 250), previewView.display.rotation)
+                    .setScaleType(ViewPort.FILL_CENTER)
+                    .build()
+
+
                 val cameraSelector = CameraSelector.Builder()
                     .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                    .build()
+
+                val useCaseGroup = UseCaseGroup.Builder()
+                    .addUseCase(preview)
+                    .addUseCase(analysis)
+                    .setViewPort(viewPort)
                     .build()
 
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
                     lifecycleOwner,
                     cameraSelector,
-                    preview
+                    useCaseGroup
                 )
 
             }, executor)
@@ -141,7 +173,8 @@ fun NoCameraView(
 @Composable
 fun QRCodeServerConfig(
     modifier: Modifier = Modifier,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onCodeFound: (String) -> Unit = {}
 ) {
     // permission handling
     val cameraPermission = rememberPermissionState(
@@ -172,7 +205,7 @@ fun QRCodeServerConfig(
             }
         ) {
             if (cameraPermission.status.isGranted) {
-                CameraView()
+                CameraView(onCodeFound)
             } else {
                 NoCameraView(cameraPermission = cameraPermission)
             }

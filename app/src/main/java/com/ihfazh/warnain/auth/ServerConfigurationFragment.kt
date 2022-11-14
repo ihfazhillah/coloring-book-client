@@ -78,9 +78,18 @@ fun ServerConfigurationFragment(
 
             }
         } else {
-            QRCodeServerConfig() {
-                loginPageState = LoginState.MANUAL
-            }
+            QRCodeServerConfig(
+                onCodeFound = {
+                    serverConfigurationViewModel.updateEndpoint(it)
+                    serverConfigurationViewModel.login{
+                        resultNavigator.navigateBack(result=true)
+                    }
+
+                },
+                onBack = {
+                    loginPageState = LoginState.MANUAL
+                }
+            )
         }
 
     }
