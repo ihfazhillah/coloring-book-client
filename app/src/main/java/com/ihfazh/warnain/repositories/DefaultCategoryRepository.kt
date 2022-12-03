@@ -5,6 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.ihfazh.warnain.domain.Category
 import com.ihfazh.warnain.domain.CategoryDetail
+import com.ihfazh.warnain.domain.CategorySorter
 import com.ihfazh.warnain.remote.WarnainService
 import com.ihfazh.warnain.remote.data.PrintImageBody
 import com.ihfazh.warnain.remote.paging_source.CategoriesPagingSource
@@ -15,9 +16,9 @@ import org.koin.core.annotation.Factory
 class DefaultCategoryRepository(
     private val remote: WarnainService
 ): CategoryRepository {
-    override fun getCategories(search: String): Flow<PagingData<Category>> {
+    override fun getCategories(search: String, sort: CategorySorter): Flow<PagingData<Category>> {
         val pagingSource = CategoriesPagingSource(
-            remote, search
+            remote, search, sort
         )
 
         val pager = Pager(

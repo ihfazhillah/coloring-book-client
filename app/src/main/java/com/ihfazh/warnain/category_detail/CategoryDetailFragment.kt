@@ -28,7 +28,6 @@ import com.google.accompanist.pager.rememberPagerState
 import com.ihfazh.warnain.R
 import com.ihfazh.warnain.destinations.PrintRunningFragmentDestination
 import com.ihfazh.warnain.domain.Category
-import com.ihfazh.warnain.domain.CategoryFilter
 import com.ihfazh.warnain.ui.components.FilterChip
 import com.ihfazh.warnain.ui.components.ImageCard
 import com.ihfazh.warnain.ui.components.Stepper

@@ -8,6 +8,7 @@ interface WarnainService {
     @GET("categories/")
     suspend fun getCategories(
         @Query("search") search: String = "",
+        @Query("sort_by") sort: String = "title",
         @Query("page") page: Int = 1
     ): CategoriesResponse
 

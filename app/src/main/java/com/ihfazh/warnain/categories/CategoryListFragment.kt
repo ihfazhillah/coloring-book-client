@@ -2,36 +2,25 @@ package com.ihfazh.warnain.categories
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.*
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.paging.LoadState
 import androidx.paging.LoadState.Error
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
-import coil.compose.rememberAsyncImagePainter
-import com.ihfazh.warnain.auth.LoginState
-import com.ihfazh.warnain.destinations.CategoryDetailFragmentDestination
 import com.ihfazh.warnain.destinations.CategoryDetailGridFragmentDestination
 import com.ihfazh.warnain.destinations.NoConnectionFragmentDestination
 import com.ihfazh.warnain.destinations.ServerConfigurationFragmentDestination
-import com.ihfazh.warnain.domain.CategoryFilter
-import com.ihfazh.warnain.no_connection.NoConnectionFragment
+import com.ihfazh.warnain.domain.CategorySorter
 import com.ihfazh.warnain.ui.components.ImageCard
 import com.ihfazh.warnain.ui.components.TextInput
-import com.ihfazh.warnain.ui.theme.WarnainTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
+import kotlinx.coroutines.flow.collect
 import org.koin.androidx.compose.get
-import org.koin.androidx.compose.getViewModel
-import org.koin.androidx.compose.koinViewModel
 import java.net.ConnectException
 import java.net.UnknownHostException
 
@@ -47,8 +36,7 @@ fun CategoryListFragment(
 
     val searchState = categoriesViewModel.searchState.collectAsState()
     val categories = categoriesViewModel.categories.collectAsLazyPagingItems()
-    val filterState = categoriesViewModel.filterState.collectAsState()
-    val latestCategories = categoriesViewModel.latestCategories.collectAsState()
+    val sorterState = categoriesViewModel.sorterState.collectAsState()
 
     LaunchedEffect("hasToken", categories.loadState.source) {
         val noToken = !categoriesViewModel.hasToken()
@@ -101,8 +89,10 @@ fun CategoryListFragment(
                 Spacer(modifier = Modifier.height(21.dp))
 
                 Row {
-                    com.ihfazh.warnain.ui.components.FilterChip(text = "Semua", isActive = filterState.value == CategoryFilter.ALL) {
-                        categoriesViewModel.updateFilterState(CategoryFilter.ALL)
+
+                    com.ihfazh.warnain.ui.components.FilterChip(
+                        text = "Alphabet", isActive = sorterState.value == CategorySorter.TITLE) {
+                        categoriesViewModel.updateSorterState(CategorySorter.TITLE)
 
                     }
 
@@ -110,9 +100,19 @@ fun CategoryListFragment(
 
                     com.ihfazh.warnain.ui.components.FilterChip(
                         text = "Terakhir",
-                        isActive = filterState.value == CategoryFilter.LATEST
+                        isActive = sorterState.value == CategorySorter.ACCESS
                     ) {
-                        categoriesViewModel.updateFilterState(CategoryFilter.LATEST)
+                        categoriesViewModel.updateSorterState(CategorySorter.ACCESS)
+
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    com.ihfazh.warnain.ui.components.FilterChip(
+                        text = "Paling Sering",
+                        isActive = sorterState.value == CategorySorter.FREQ
+                    ) {
+                        categoriesViewModel.updateSorterState(CategorySorter.FREQ)
 
                     }
                 }
@@ -129,43 +129,22 @@ fun CategoryListFragment(
                         .fillMaxSize()
 
                 ) {
-                    when(filterState.value){
-                        CategoryFilter.ALL -> {
-                            items(categories.itemCount) { index ->
-                                categories[index]?.let { category ->
-                                    ImageCard(
-                                        category = category,
-                                        onClick = {
-                                            navigator.navigate(
-                                                CategoryDetailGridFragmentDestination(category)
-                                            )
+
+                    items(categories.itemCount) { index ->
+                        categories[index]?.let { category ->
+                            ImageCard(
+                                category = category,
+                                onClick = {
+                                    navigator.navigate(
+                                        CategoryDetailGridFragmentDestination(category)
+                                    )
 //                                            navigator.navigate(
 //                                                CategoryDetailGridDestination(category)
 //                                            )
-                                        }
-                                    )
                                 }
-                            }
-                        }
-
-                        CategoryFilter.LATEST -> {
-                            items(latestCategories.value){ category ->
-                                ImageCard(
-                                    category = category,
-                                    onClick = {
-                                        navigator.navigate(
-                                            CategoryDetailGridFragmentDestination(category)
-                                        )
-//                                        navigator.navigate(
-//                                            CategoryDetailGridDestination(category)
-//                                        )
-                                    }
-                                )
-                            }
-
+                            )
                         }
                     }
-
                 }
 
                 Spacer(modifier = Modifier.height(40.dp))

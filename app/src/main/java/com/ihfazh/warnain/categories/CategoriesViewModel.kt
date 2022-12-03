@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ihfazh.warnain.common.PreferenceManager
 import com.ihfazh.warnain.domain.Category
-import com.ihfazh.warnain.domain.CategoryFilter
+import com.ihfazh.warnain.domain.CategorySorter
 import com.ihfazh.warnain.repositories.CategoryRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -28,10 +28,10 @@ class CategoriesViewModel(
         _searchState.value = value
     }
 
-    private var _filterState = MutableStateFlow(CategoryFilter.ALL)
-    val filterState: StateFlow<CategoryFilter> = _filterState
-    fun updateFilterState(state: CategoryFilter){
-        _filterState.value = state
+    private var _sorterState = MutableStateFlow(CategorySorter.TITLE)
+    val sorterState: StateFlow<CategorySorter> = _sorterState
+    fun updateSorterState(state: CategorySorter){
+        _sorterState.value = state
     }
 
 
@@ -46,20 +46,27 @@ class CategoriesViewModel(
         return preferenceManager.getToken() != null
     }
 
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    val categories = searchState.flatMapLatest { query ->
+//        categoryRepository.getCategories(query)
+//    }.shareIn(viewModelScope, SharingStarted.Lazily)
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    val categories = searchState.flatMapLatest { query ->
-        categoryRepository.getCategories(query)
+    val categories = searchState.combine(sorterState){ search, sort ->
+        categoryRepository.getCategories(search, sort)
+    }.flatMapLatest {
+        it
     }.shareIn(viewModelScope, SharingStarted.Lazily)
 
-    init {
-        viewModelScope.launch{
-            filterState.collectLatest {
-                if (it == CategoryFilter.LATEST){
-                    getLatestCategory()
-                }
-            }
-        }
-    }
+//    init {
+//        viewModelScope.launch{
+//            filterState.collectLatest {
+//                if (it == CategoryFilter.LATEST){
+//                    getLatestCategory()
+//                }
+//            }
+//        }
+//    }
 
     // used for saving scroll state
     var firstVisibleItemOffset = 0
