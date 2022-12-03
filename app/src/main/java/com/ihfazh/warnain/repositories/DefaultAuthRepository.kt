@@ -21,6 +21,10 @@ class DefaultAuthRepository(
         }
     }
 
+    override suspend fun removeToken() {
+        preferenceManager.setToken(null)
+    }
+
     override suspend fun getDeviceIdentifier(): String {
         return preferenceManager.getGUID()
     }

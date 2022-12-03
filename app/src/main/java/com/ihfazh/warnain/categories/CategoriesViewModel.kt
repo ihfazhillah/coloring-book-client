@@ -61,4 +61,8 @@ class CategoriesViewModel(
         }
     }
 
+    // used for saving scroll state
+    var firstVisibleItemOffset = 0
+    var firstVisibleItemIndex = 0
+
 }

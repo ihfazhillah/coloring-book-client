@@ -3,10 +3,8 @@ package com.ihfazh.warnain.categories
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -20,8 +18,10 @@ import coil.compose.rememberAsyncImagePainter
 import com.ihfazh.warnain.auth.LoginState
 import com.ihfazh.warnain.destinations.CategoryDetailFragmentDestination
 import com.ihfazh.warnain.destinations.CategoryDetailGridFragmentDestination
+import com.ihfazh.warnain.destinations.NoConnectionFragmentDestination
 import com.ihfazh.warnain.destinations.ServerConfigurationFragmentDestination
 import com.ihfazh.warnain.domain.CategoryFilter
+import com.ihfazh.warnain.no_connection.NoConnectionFragment
 import com.ihfazh.warnain.ui.components.ImageCard
 import com.ihfazh.warnain.ui.components.TextInput
 import com.ihfazh.warnain.ui.theme.WarnainTheme
@@ -30,7 +30,9 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
 import org.koin.androidx.compose.get
+import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.compose.koinViewModel
+import java.net.ConnectException
 import java.net.UnknownHostException
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -53,6 +55,16 @@ fun CategoryListFragment(
         val unknownHostError = categories.loadState.source.refresh is Error && (categories.loadState.source.refresh as Error).error is UnknownHostException
         if (noToken || unknownHostError){
             navigator.navigate(ServerConfigurationFragmentDestination.route)
+        }
+
+        val connectionError = listOf(
+            (categories.loadState.source.refresh is Error && (categories.loadState.source.refresh as Error).error is ConnectException),
+            (categories.loadState.source.append is Error && (categories.loadState.source.append as Error).error is ConnectException),
+            (categories.loadState.source.prepend is Error && (categories.loadState.source.prepend as Error).error is ConnectException),
+        ).any { it -> it }
+
+        if (connectionError){
+            navigator.navigate(NoConnectionFragmentDestination)
         }
     }
 
@@ -109,6 +121,7 @@ fun CategoryListFragment(
                 Spacer(modifier = Modifier.height(21.dp))
 
                 LazyVerticalGrid(
+                   state = persistedLazyScrollState(viewModel = categoriesViewModel),
                     columns = GridCells.Adaptive(150.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -163,3 +176,15 @@ fun CategoryListFragment(
     )
 }
 
+
+@Composable
+fun persistedLazyScrollState(viewModel: CategoriesViewModel): LazyGridState {
+    val scrollState = rememberLazyGridState(viewModel.firstVisibleItemIndex, viewModel.firstVisibleItemOffset)
+    DisposableEffect(key1 = null) {
+        onDispose {
+            viewModel.firstVisibleItemIndex = scrollState.firstVisibleItemIndex
+            viewModel.firstVisibleItemOffset = scrollState.firstVisibleItemScrollOffset
+        }
+    }
+    return scrollState
+}
