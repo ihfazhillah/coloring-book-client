@@ -2,6 +2,8 @@ package com.ihfazh.warnain.print_running
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,11 +32,16 @@ fun PrintRunningFragment(
     categoryDetail: CategoryDetail,
     navigator: DestinationsNavigator
 ){
+    val scrollState = rememberScrollState()
+
     Scaffold(){
         Column(
-            Modifier.fillMaxSize(),
+            Modifier.fillMaxSize()
+                .verticalScroll(scrollState)
+            ,
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+
         ){
 
             Box(
